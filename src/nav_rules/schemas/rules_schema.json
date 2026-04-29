@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NavigationRulesConfig",
+  "description": "JSON configuration for navigation rules (goals, obstacles, blending, sectors).",
+  "type": "object",
+  "required": ["version", "goal_rules", "obstacle_rules", "sectors", "blending", "output"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Config version for compatibility (e.g. 1.0)."
+    },
+    "goal_rules": {
+      "type": "object",
+      "required": ["goal_classes", "min_confidence"],
+      "properties": {
+        "goal_classes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Class names that are goals (e.g. person, red-marker)."
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["confidence", "area", "confidence_times_area"],
+          "default": "confidence_times_area",
+          "description": "How to pick the best goal when multiple visible."
+        },
+        "min_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum confidence for a detection to count as goal."
+        },
+        "min_area_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Optional minimum area ratio for goal."
+        }
+      }
+    },
+    "obstacle_rules": {
+      "type": "object",
+      "required": ["obstacle_classes"],
+      "properties": {
+        "obstacle_classes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Class names that count as obstacles for sector scoring."
+        }
+      }
+    },
+    "sectors": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["thirds"],
+          "default": "thirds",
+          "description": "Sector layout: thirds = three vertical columns."
+        },
+        "approach_zone_height_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.55,
+          "description": "Lower fraction of image used as approach zone (e.g. 0.55)."
+        }
+      }
+    },
+    "blending": {
+      "type": "object",
+      "required": ["goal_weight", "obstacle_bias_deg", "heading_clamp_deg"],
+      "properties": {
+        "goal_weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for goal heading (e.g. 0.65); obstacle gets 1 - goal_weight."
+        },
+        "obstacle_bias_deg": {
+          "type": "object",
+          "required": ["left", "center", "right"],
+          "properties": {
+            "left": { "type": "number" },
+            "center": { "type": "number" },
+            "right": { "type": "number" }
+          },
+          "description": "Heading bias in degrees per sector when avoiding."
+        },
+        "heading_clamp_deg": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": " [min, max] for final heading command (e.g. [-40, 40])."
+        },
+        "speed_scale_when_goal_visible": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.85
+        },
+        "speed_scale_reduction_by_center_score": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["threshold", "speed_scale"],
+            "properties": {
+              "threshold": { "type": "number" },
+              "speed_scale": { "type": "number" }
+            }
+          },
+          "description": "List of { threshold, speed_scale }; applied in order (e.g. center > 0.2 -> 0.45)."
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "heading_bounds_deg": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": " [min, max] for output heading."
+        },
+        "speed_scale_bounds": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": " [min, max] for output speed_scale (e.g. [0.2, 1.0])."
+        }
+      }
+    }
+  }
+}
