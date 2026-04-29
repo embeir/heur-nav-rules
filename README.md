@@ -1,6 +1,6 @@
-# nav-rules
+# heur-nav-rules
 
-`nav-rules` is a Python library that converts vision detections into a simple navigation command.
+`heur-nav-rules` is a Python library that converts vision detections into a simple navigation command.
 
 Input: detections + rules JSON  
 Output: heading + speed scale (+ diagnostics)
@@ -8,7 +8,7 @@ Output: heading + speed scale (+ diagnostics)
 ## Install
 
 ```bash
-pip install nav-rules
+pip install heur-nav-rules
 ```
 
 For local development:
